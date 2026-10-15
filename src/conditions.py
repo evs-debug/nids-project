@@ -6,18 +6,18 @@ from data import NUMERIC
 VOLUME = ["src_bytes", "dst_bytes", "count", "srv_count", "dst_host_count", "dst_host_srv_count"]
 
 
-def continuous_stats(X_train):
-    binary = [c for c in NUMERIC if set(X_train[c].unique()) <= {0, 1}]
-    continuous = [c for c in NUMERIC if c not in binary]
-    return X_train[continuous].std().to_dict()
+# flow statistics a collector measures; content features such as num_failed_logins
+# come from payload inspection and are not affected by measurement error
+MEASURED = ["duration"] + VOLUME
+RATES = [c for c in NUMERIC if c.endswith("_rate")]
 
 
-def gaussian_noise(X, sigma, stats, rng):
+def measurement_noise(X, sigma, rng):
     out = X.copy()
-    for col, std in stats.items():
-        noisy = X[col].to_numpy(dtype=float) + rng.normal(0, sigma * std, len(X))
-        upper = 1 if col.endswith("_rate") else None
-        out[col] = np.clip(noisy, 0, upper)
+    for col in MEASURED:
+        out[col] = np.clip(X[col] * (1 + rng.normal(0, sigma, len(X))), 0, None)
+    for col in RATES:
+        out[col] = np.clip(X[col] + rng.normal(0, sigma, len(X)), 0, 1)
     return out
 
 
