@@ -51,6 +51,11 @@ def load_split(name):
     return X, y
 
 
+def load_attack_names(name):
+    path = RAW_DIR / f"KDD{name}+.txt"
+    return pd.read_csv(path, header=None, names=COLUMNS, usecols=["label"])["label"]
+
+
 def make_preprocessor():
     # the test split has services that never appear in train
     return ColumnTransformer([
