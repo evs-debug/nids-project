@@ -5,3 +5,8 @@ xgboost
 shap
 matplotlib
 seaborn
+fastapi
+uvicorn
+sqlalchemy>=2
+psycopg[binary]
+python-multipart
