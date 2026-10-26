@@ -11,7 +11,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN sed -i 's/^xgboost$/xgboost-cpu/' requirements.txt && pip install -r requirements.txt
 COPY src/ src/
 COPY api/ api/
 RUN python src/get_data.py
