@@ -6,9 +6,11 @@ from sqlalchemy.engine import make_url
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
-DATABASE_URL = os.environ.get(
-    "DATABASE_URL", "postgresql+psycopg://localhost/nids"
-)
+DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql+psycopg://localhost/nids")
+# hosts hand out postgres:// or postgresql:// URLs, which SQLAlchemy reads as the psycopg2 driver
+for prefix in ("postgres://", "postgresql://"):
+    if DATABASE_URL.startswith(prefix):
+        DATABASE_URL = "postgresql+psycopg://" + DATABASE_URL[len(prefix):]
 
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 Session = sessionmaker(engine, expire_on_commit=False)

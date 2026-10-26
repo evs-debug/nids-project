@@ -1,4 +1,5 @@
 import io
+import os
 import time
 from contextlib import asynccontextmanager
 from typing import Optional
@@ -190,6 +191,8 @@ def stats(session: OrmSession = Depends(get_session)):
 
 @app.post("/api/reset")
 def reset(session: OrmSession = Depends(get_session)):
+    if os.environ.get("ALLOW_RESET", "1") == "0":
+        raise HTTPException(403, "clearing history is disabled on this deployment")
     session.execute(text("truncate detections, batches restart identity"))
     session.commit()
     return {"status": "cleared"}
