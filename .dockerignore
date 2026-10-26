@@ -1,0 +1,10 @@
+.git
+data
+models
+results
+docs
+web/node_modules
+web/dist
+**/__pycache__
+.venv
+.DS_Store
