@@ -13,9 +13,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 \
 COPY requirements.txt .
 RUN sed -i 's/^xgboost$/xgboost-cpu/' requirements.txt && pip install -r requirements.txt
 COPY src/ src/
-COPY api/ api/
+COPY server/ server/
 RUN python src/get_data.py
 # train once at build time so a restart takes seconds, not a minute
-RUN python -c "import sys; sys.path.insert(0, 'src'); from api.engine import Engine; Engine()"
+RUN python -c "import sys; sys.path.insert(0, 'src'); from server.engine import Engine; Engine()"
 COPY --from=web /web/dist web/dist
-CMD ["sh", "-c", "uvicorn api.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["sh", "-c", "uvicorn server.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

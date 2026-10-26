@@ -9,7 +9,7 @@ You need Python 3, Node 18 or newer and a running Postgres. From the project roo
     brew install postgresql@16 node
     brew services start postgresql@16
     cd web && npm install && npm run build && cd ..
-    python3 -m uvicorn api.main:app --port 8000
+    python3 -m uvicorn server.main:app --port 8000
 
 Open http://127.0.0.1:8000. The first start trains the models if `models/demo.joblib` is missing, which takes about a minute, and creates the `nids` database and its tables.
 
