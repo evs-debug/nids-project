@@ -6,6 +6,8 @@ from typing import Optional
 from fastapi import Depends, FastAPI, File, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 from pydantic import BaseModel, Field
 from sqlalchemy import case, func, select, text
 from sqlalchemy.orm import Session as OrmSession
@@ -209,3 +211,8 @@ def sample_csv(n: int = Query(40, ge=5, le=500)):
         media_type="text/csv",
         headers={"Content-Disposition": "attachment; filename=sample_flows.csv"},
     )
+
+
+DIST = Path(__file__).resolve().parent.parent / "web" / "dist"
+if DIST.exists():
+    app.mount("/", StaticFiles(directory=DIST, html=True), name="web")

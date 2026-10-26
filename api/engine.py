@@ -22,8 +22,8 @@ CATEGORICAL_FEATURES = ["protocol_type", "service", "flag"]
 
 CONDITIONS = {
     "clean": ("Clean traffic", None),
-    "noise_low": ("Measurement noise, sigma 0.1", lambda X, rng: measurement_noise(X, 0.1, rng)),
-    "noise_high": ("Measurement noise, sigma 0.3", lambda X, rng: measurement_noise(X, 0.3, rng)),
+    "noise_low": ("Noise, sigma 0.1", lambda X, rng: measurement_noise(X, 0.1, rng)),
+    "noise_high": ("Noise, sigma 0.3", lambda X, rng: measurement_noise(X, 0.3, rng)),
     "loss_low": ("Packet loss 20%", lambda X, rng: packet_loss(X, 0.2, rng)),
     "loss_high": ("Packet loss 50%", lambda X, rng: packet_loss(X, 0.5, rng)),
     "dropout_low": ("Feature dropout 10%", lambda X, rng: feature_dropout(X, 0.1, rng)),
