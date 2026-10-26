@@ -19,16 +19,22 @@ If `python3` is not the interpreter your packages were installed into (Homebrew 
 
 ## Deploy it
 
-The repo has a `Dockerfile` that builds the frontend, downloads the dataset and trains the models at build time, so the server starts in a second or two. The running app uses about 400 MB of RAM, so pick a plan with at least 1 GB. Free tiers with 512 MB are too tight.
+The repo has a `Dockerfile` that builds the frontend, downloads the dataset and trains the models at build time, so the server starts in a second or two. It installs the CPU-only build of XGBoost to keep the image small. The running app uses about 400 MB of RAM, so pick a plan with at least 1 GB. Free tiers with 512 MB are too tight.
 
-These steps are for Railway. The button names may differ slightly from what you see.
+The app reads `PORT` and `DATABASE_URL`, and accepts both the `postgres://` and `postgresql://` URL forms. Set `ALLOW_RESET=0` on a public deployment so visitors cannot clear the stored history.
 
-1. Push the repo to GitHub, with the `Dockerfile` in the root.
-2. On railway.com, create a new project and choose "Deploy from GitHub repo". Pick this repo. Railway finds the `Dockerfile` by itself. The first build takes a few minutes because it trains the models.
-3. In the same project, add a Postgres database ("New", then "Database", then "PostgreSQL").
-4. Open the web service, go to Variables, and add `DATABASE_URL` with the value `${{Postgres.DATABASE_URL}}` (the reference to the database you just added). Add `ALLOW_RESET` with the value `0` so visitors cannot clear the stored history.
-5. Under Settings, then Networking, generate a public domain. Open it. The overview page should load and say "Backend connected".
+### Vercel with a Neon database
 
-The API creates its tables on the first start, so there is nothing to migrate.
+`Dockerfile.vercel` is the same image set up for Vercel, which runs it as a function on port 80. Vercel and Neon both have free plans that need no card.
 
-Other hosts work the same way: any service that builds a `Dockerfile`, offers Postgres, and sets a `PORT` variable. The app reads `PORT` and `DATABASE_URL`, and accepts both the `postgres://` and `postgresql://` URL forms.
+1. Create a free database at neon.com and copy its connection string.
+2. On vercel.com, choose Add New, then Project, and import this GitHub repo. Leave the framework preset on Other.
+3. Before deploying, add an environment variable `DATABASE_URL` with the Neon connection string.
+4. Deploy. The first build takes a few minutes because it trains the models.
+5. Open the project URL. The overview page should load and say "Backend connected".
+
+Vercel's container support is new, so if the build fails, send the last lines of the build log.
+
+### Other hosts
+
+Any service that builds a `Dockerfile` and offers Postgres works the same way, for example Google Cloud Run with a Neon database, or Railway when it is open for signups. Use `Dockerfile`, set `DATABASE_URL`, and the host's `PORT` is picked up automatically.
